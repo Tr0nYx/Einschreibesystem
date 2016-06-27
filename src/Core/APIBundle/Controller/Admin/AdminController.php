@@ -1,7 +1,6 @@
 <?php
 /**
  * Created by IntelliJ IDEA.
- * User: Marco Hanisch
  * Authors: Marco Hanisch, Andreas Ifland,Leon Bergmann
  * Date: 31.05.2016
  * Time: 13:01
@@ -192,7 +191,47 @@ class AdminController extends FOSRestController implements ClassResourceInterfac
         return View::create(null, Codes::HTTP_OK);
     }
 
+/**
+     * Action to change the password
+     * @ApiDoc(
+     *  resource=true,
+     *  description="Action to change the email",
+     *  output = "",
+     *  statusCodes = {
+     *      200 = "Returned when successful",
+     *      404 = "Returned when the data is not found"
+     *  },requirements={{
+     *        "name"="adminId",
+     *        "dataType"="integer",
+     *        "requirement"="\d+",
+     *        "description"="Admin ID"
+     *}}
+     * )
+     * @param $paramfetcher params of admin
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @Rest\RequestParam(name="oldemail", requirements=".*", description="json object of workshop")
+     * @Rest\RequestParam(name="newemail", requirements=".*", description="json object of workshop")
+     * @Rest\View()
+     */
+    public function patchEmailAction(ParamFetcher $paramfetcher)
+    {
+        //get all params
+        $params = $paramfetcher->all();
+        //get current user
+        $admin = $this->getUser();
+        //check if old password input equals the current password in database
+        if ($admin->getEmail(), $params['oldemaik'] ) {
+            //set new password
+            $admin->setPlainEmail($params['newemail']);
+        } else {
+            //old password is wrong
+            throw $this->createAccessDeniedException("The old email is incorrect");
+        }
+        $this->getDoctrine()->getManager()->persist($admin);
+        $this->getDoctrine()->getManager()->fluch();
 
+        return View::create(null, Codes::HTTP_OK);
+    }
     /**
      * Returns list of all admins
      * @ApiDoc(
